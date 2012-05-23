@@ -28,7 +28,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.Bukkit;
 // CraftBukkit end
 
-import com.github.wolf480pl.mixedpremium.MixedPremium;
+import com.github.wolf480pl.mixedpremium.MixedPremium; // MixedPremium
 
 public class ServerConfigurationManager {
 
@@ -181,8 +181,11 @@ public class ServerConfigurationManager {
         PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(this.cserver.getPlayer(entityplayer), "\u00A7e" + entityplayer.name + " left the game.");
         this.cserver.getPluginManager().callEvent(playerQuitEvent);
         // CraftBukkit end
-
-        this.playerFileData.save(entityplayer);
+        
+        // MixedPremium begin
+        MixedPremium mixedpremium = (MixedPremium) cserver.getPluginManager().getPlugin("MixedPremium");
+        if(!mixedpremium.mustLogin(entityplayer.getBukkitEntity())) this.playerFileData.save(entityplayer);
+        // MixedPremium end
         this.server.getWorldServer(entityplayer.dimension).kill(entityplayer);
         this.players.remove(entityplayer);
         this.getPlayerManager(entityplayer.dimension).removePlayer(entityplayer);
@@ -209,14 +212,15 @@ public class ServerConfigurationManager {
     	// MixedPremium begin
     	MixedPremium mixedpremium = (MixedPremium) cserver.getPluginManager().getPlugin("MixedPremium");
     	World world;
+    	boolean mustlogin;
     	if(mixedpremium == null)
-    		world = server.getWorldServer(0);
+    		mustlogin = false;
     	else
-    		
-    		if(mixedpremium.mustLogin(netloginhandler.getSocket()))
-    				world = server.getWorldServer(0);
-    		else
-    				world = ((CraftWorld)cserver.getWorld(mixedpremium.getConfig().getString("login-world"))).getHandle();
+    		mustlogin = mixedpremium.mustLogin(netloginhandler.getSocket());
+    	if(!mustlogin)
+    			world = server.getWorldServer(0);
+    	else
+    			world = ((CraftWorld)cserver.getWorld(mixedpremium.getConfig().getString("login-world"))).getHandle();
         EntityPlayer entity = new EntityPlayer(this.server, world, s, new ItemInWorldManager(this.server.getWorldServer(0)));
         Player player = entity.getBukkitEntity();
         if(mixedpremium != null) mixedpremium.setPremium(netloginhandler.getSocket(), netloginhandler.premium);
@@ -240,13 +244,13 @@ public class ServerConfigurationManager {
             event.disallow(PlayerLoginEvent.Result.ALLOWED, s1);
         }
 
-        this.b(entity);
+        if(!mustlogin) this.b(entity);	// MixedPremium
         this.cserver.getPluginManager().callEvent(event);
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             netloginhandler.disconnect(event.getKickMessage());
             return null;
         }
-
+        if(mustlogin) return entity;	// MixedPremium
         for (int i = 0; i < this.players.size(); ++i) {
             EntityPlayer entityplayer = (EntityPlayer) this.players.get(i);
 
