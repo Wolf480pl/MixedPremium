@@ -24,8 +24,20 @@
     </dependency>
     <dependency>
     	<groupId>org.bukkit</groupId>
-    	<artifactId>craftbukkit</artifactId>
+    	<artifactId>bukkit</artifactId>
     	<version>1.2.5-R2.0</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.github.wolf480pl.mixedpremium</groupId>
+    	<artifactId>MixedPremiumPlugin</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<exclusions>
+          <exclusion>
+            <groupId>com.github.wolf480pl.mixedpremium</groupId>
+            <artifactId>MixedPremiumMod</artifactId>
+          </exclusion>
+        </exclusions>
+    	
     </dependency>
   </dependencies>
 </project>
