@@ -213,13 +213,13 @@ public class ServerConfigurationManager {
     		world = server.getWorldServer(0);
     	else
     		
-    		if(mixedpremium.mustLogin(netloginhandler.premium))
+    		if(mixedpremium.mustLogin(netloginhandler.getSocket()))
     				world = server.getWorldServer(0);
     		else
     				world = ((CraftWorld)cserver.getWorld(mixedpremium.getConfig().getString("login-world"))).getHandle();
         EntityPlayer entity = new EntityPlayer(this.server, world, s, new ItemInWorldManager(this.server.getWorldServer(0)));
         Player player = entity.getBukkitEntity();
-        if(mixedpremium != null) mixedpremium.setPremium(s, netloginhandler.premium);
+        if(mixedpremium != null) mixedpremium.setPremium(netloginhandler.getSocket(), netloginhandler.premium);
         // MixedPremium end
         PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, netloginhandler.getSocket().getInetAddress());
 
